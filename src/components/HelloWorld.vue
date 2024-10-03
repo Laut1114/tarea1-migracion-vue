@@ -19,10 +19,12 @@ h1 {
   font-size: 2.6rem;
   position: relative;
   top: -10px;
+  color: #fff;
 }
 
 h3 {
   font-size: 1.2rem;
+  color: #fff;
 }
 
 .greetings h1,
@@ -38,11 +40,7 @@ h3 {
   text-align: center;
   border-radius: 5px;
   padding: 5px;
-  position: absolute;
   z-index: 1;
-  bottom: 100%; /* Muestra el tooltip arriba */
-  left: 50%;
-  transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.3s;
 }

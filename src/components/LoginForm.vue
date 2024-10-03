@@ -1,5 +1,6 @@
 <script lang="ts">
 import { type User } from '@/models/user'
+import router from '@/router'
 import { useLoginStore } from '@/stores/login'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -8,11 +9,12 @@ export default {
   setup() {
     const loginStore = useLoginStore()
     const formDta = ref<User>({ usuario: '', contra: '', remember: false })
-    const router = useRouter()
+    //const router = useRouter()
 
     const handleSubmit = () => {
       loginStore.login(formDta.value)
-      router.push('/home')
+      // Prueba 2
+      //router.push('/home')
     }
 
     return { loginStore, handleSubmit }
@@ -38,7 +40,7 @@ export default {
         >
         <a href="#">Olvidaste tu contraseña</a>
       </div>
-      <button type="submit" class="btn">Ingresar</button>
+      <button type="submit" class="btn"><router-link to="/home">Ingresar</router-link></button>
     </form>
   </main>
 </template>
