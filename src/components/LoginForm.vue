@@ -1,20 +1,15 @@
 <script lang="ts">
 import { type User } from '@/models/user'
-import router from '@/router'
 import { useLoginStore } from '@/stores/login'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 export default {
   setup() {
     const loginStore = useLoginStore()
     const formDta = ref<User>({ usuario: '', contra: '', remember: false })
-    //const router = useRouter()
 
     const handleSubmit = () => {
       loginStore.login(formDta.value)
-      // Prueba 2
-      //router.push('/home')
     }
 
     return { loginStore, handleSubmit }
