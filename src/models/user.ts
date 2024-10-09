@@ -7,5 +7,5 @@ export interface User {
   remember?: boolean,
   isAdmim: boolean,
   token?: string,
-  refreshToken: string[]
+  refreshTokens: string[]
 }
