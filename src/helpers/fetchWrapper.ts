@@ -8,7 +8,7 @@ export const fetchWrapper = {
 }
 
 function request(method: string) {
-    return (url: string, body?: any, {credentials} : {credentials?: RequestCredentials} = {}) => {
+    return async (url: string, body?: any, {credentials} : {credentials?: RequestCredentials} = {}) => {
         const requestOptions: RequestInit = {
             method,
             headers: authHeader(url)
@@ -26,7 +26,8 @@ function request(method: string) {
             requestOptions.credentials = credentials;
         }
 
-        return fetch(url, requestOptions).then(handleResponse);
+        const response = await fetch(url, requestOptions);
+        return handleResponse(response);
     }
 }
 
@@ -34,11 +35,11 @@ function request(method: string) {
 
 function authHeader(url: string): Record<string, string> {
     const { auth } = useAuthStore();
-    const isLoggedIn = !!auth.data?.token;
+    const isLoggedIn = !!auth.data?.jwToken;
     const isApiUrl = url.startsWith(import.meta.env.VITE_API_URL);
 
     if (isLoggedIn && isApiUrl) {
-        return { Authorization: `Bearer ${auth.data?.token}` };
+        return { Authorization: `Bearer ${auth.data?.jwToken}` };
     } else {
         return {};
     }

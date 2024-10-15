@@ -1,43 +1,57 @@
-<script lang="ts">
-import { type User } from '@/models/user'
-import { useLoginStore } from '@/stores/login'
-import { ref } from 'vue'
+<script setup lang="ts">
+import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
+import { Form, Field } from 'vee-validate';
+import * as Yup from 'yup';
 
-export default {
-  setup() {
-    const loginStore = useLoginStore()
-    const formDta = ref<User>({ usuario: '', contra: '', remember: false })
+const router = useRouter();
+const authStore = useAuthStore();
 
-    const handleSubmit = () => {
-      loginStore.login(formDta.value)
-    }
+const schema = Yup.object().shape({
+  username: Yup.string().required('Usuario Requerido'),
+  password: Yup.string().required('Contraseña es Requerido')
+});
 
-    return { loginStore, handleSubmit }
-  }
+if (authStore.auth.data) {
+  router.push('/');
 }
+
+function handleSubmit(values: any, { setErrors }: any) {
+  const { username, password } = values;
+
+  return authStore.login(username, password).then(() => {
+    router.push('/');
+  })
+  .catch(error => setErrors({ apiError: error }));
+}
+
 </script>
 
 <template>
-  <main>
-    <form v-on:submit.prevent="handleSubmit" id="loginForm" action="">
-      <h1>Login</h1>
-      <div class="input-bx">
-        <input v-model="loginStore.usuario" type="text" placeholder="Usuario" required />
-        <ion-icon class="icon" name="person-circle"></ion-icon>
-      </div>
-      <div class="input-bx">
-        <input v-model="loginStore.contra" type="password" placeholder="Contraseña" required />
-        <ion-icon class="icon" name="lock-closed"></ion-icon>
-      </div>
-      <div class="remember-forgot">
-        <label
-          ><input type="checkbox" v-model="loginStore.remember" name="remember" /> Recordarme</label
-        >
-        <a href="#">Olvidaste tu contraseña</a>
-      </div>
-      <button type="submit" class="btn"><router-link to="/home">Ingresar</router-link></button>
-    </form>
-  </main>
+  <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
+    <h1>Login</h1>
+    <div class="input-bx">
+      <Field name='username' type="text" :class="{ 'is-invalid': errors.username || errors.apiError }"
+        placeholder="Usuario" required />
+      <ion-icon class="icon" name="person-circle"></ion-icon>
+      <div class="invalid-feedback">{{ errors.username }}</div>
+    </div>
+    <div class="input-bx">
+      <Field name="password" type="password" :class="{ 'is-invalid': errors.password || errors.apiError }"
+        placeholder="Contraseña" required />
+      <ion-icon class="icon" name="lock-closed"></ion-icon>
+      <div class="invalid-feedback">{{ errors.password }}</div>
+    </div>
+    <div class="remember-forgot">
+      <label><input type="checkbox" name="remember" /> Recordarme</label>
+      <a href="#">Olvidaste tu contraseña</a>
+    </div>
+    <button type="submit" class="btn">
+      <span v-show="isSubmitting" class="loader"></span>
+      <p v-show="!isSubmitting">Ingresar</p>
+    </button>
+    <div v-if="errors.apiError" class="error-alert">{{ errors.apiError }}</div>
+  </Form>
 </template>
 
 <style scoped>
@@ -46,14 +60,14 @@ export default {
   text-align: center;
 }
 
-.wrapper .input-bx {
+.input-bx {
   position: relative;
   width: 100%;
   height: 50px;
   margin: 30px 0;
 }
 
-.wrapper .input-bx input {
+.input-bx input {
   width: 100%;
   height: 100%;
   background: transparent;
@@ -65,11 +79,23 @@ export default {
   padding: 20px 45px 20px 20px;
 }
 
-.wrapper .input-bx input::placeholder {
+.input-bx input.is-invalid {
+  width: 100%;
+  height: 100%;
+  background: rgba(250, 150, 150, 0.1);
+  border: 2px solid rgba(255, 0, 0, 0.2);
+  color: red;
+}
+
+.input-bx input::placeholder {
   color: #fff;
 }
 
-.wrapper .input-bx .icon {
+.input-bx input.is-invalid::placeholder {
+  color: red;
+}
+
+.input-bx .icon {
   position: absolute;
   right: 20px;
   top: 50%;
@@ -77,28 +103,35 @@ export default {
   font-size: 1.5em;
 }
 
-.wrapper .remember-forgot {
+.input-bx .invalid-feedback {
+  padding: 0px 16px;
+  margin: 0;
+  color: red;
+  font-weight: 300;
+}
+
+.remember-forgot {
   display: flex;
   justify-content: space-between;
   font-size: 1.2em;
   margin: -15px 0 15px;
 }
 
-.wrapper .remember-forgot label input {
+.remember-forgot label input {
   accent-color: #fff;
   margin-right: 3px;
 }
 
-.wrapper .remember-forgot a {
+.remember-forgot a {
   color: #fff;
   text-decoration: none;
 }
 
-.wrapper .remember-forgot a:hover {
+.remember-forgot a:hover {
   text-decoration: underline;
 }
 
-.wrapper button {
+button {
   width: 100%;
   height: 50px;
   border-radius: 15px;
@@ -109,5 +142,42 @@ export default {
   font-size: 1.2em;
   font-weight: 600;
   color: #333;
+}
+
+button p {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #333;
+}
+
+.loader {
+  margin: auto 0;
+  width: 24px;
+  height: 24px;
+  border: 4px solid purple;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-alert {
+  margin: 16px;
+  width: 100%;
+  background: transparent;
+  color: red;
+  text-align: center;
+  font-weight: 400;
 }
 </style>

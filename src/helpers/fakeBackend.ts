@@ -15,7 +15,7 @@ const user: User = {
     lastname: 'Orellana',
     usuario: 'test',
     contra: 'test',
-    isAdmim: true,
+    isAdmin: true,
     refreshTokens: []
 }
 
@@ -66,9 +66,9 @@ function fakeBackend() {
                 return ok({
                     id: user.id,
                     username: user.usuario,
-                    firstName: user.firstname,
+                    firstname: user.firstname,
                     lastName: user.lastname,
-                    isAdmin: user.isAdmim,
+                    isAdmin: user.isAdmin,
                     jwToken: generateJwToken()
                 });
             }
@@ -88,9 +88,9 @@ function fakeBackend() {
                 return ok({
                     id: user.id,
                     username: user.usuario,
-                    firstName: user.firstname,
+                    firstname: user.firstname,
                     lastName: user.lastname,
-                    isAdmin: user.isAdmim,
+                    isAdmin: user.isAdmin,
                     jwToken: generateJwToken()
                 });
             }

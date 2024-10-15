@@ -5,7 +5,7 @@ export interface User {
   usuario: string,
   contra: string,
   remember?: boolean,
-  isAdmim: boolean,
-  token?: string,
+  isAdmin: boolean,
+  jwToken?: string,
   refreshTokens: string[]
 }

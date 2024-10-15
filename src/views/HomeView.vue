@@ -3,7 +3,18 @@ import HelloWorld from '@/components/HelloWorld.vue'
 </script>
 
 <template>
-  <main>
+  <div class="container">
     <HelloWorld />
-  </main>
+  </div>
 </template>
+
+<style scoped>
+
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+</style>
